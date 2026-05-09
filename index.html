@@ -1,559 +1,294 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkyNavair</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --navy: #0a1628;
-    --navy-mid: #112240;
-    --orange: #e85d26;
-    --orange-light: #f07340;
-    --cream: #f5f0e8;
-    --gray: #8892a4;
-    --white: #ffffff;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyNavair</title>
+  <meta name="description" content="Preparación previa de operaciones con drones: requisitos, coordinaciones y validación de zona antes del vuelo." />
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: 'Lato', sans-serif;
-    background: var(--navy);
-    color: var(--white);
-    overflow-x: hidden;
-  }
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 60px;
-    background: rgba(10, 22, 40, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #1f2937;
+      background: #f8fafc;
+    }
 
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 22px;
-    color: var(--white);
-    letter-spacing: -0.5px;
-  }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
 
-  .logo span { color: var(--orange); }
+    header {
+      background: white;
+      padding: 80px 0;
+      text-align: center;
+    }
 
-  nav ul { list-style: none; display: flex; gap: 36px; }
-  nav ul a {
-    color: var(--gray);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    transition: color 0.2s;
-  }
-  nav ul a:hover { color: var(--white); }
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 20px;
+      color: #111827;
+    }
 
-  .nav-cta {
-    background: var(--orange) !important;
-    color: var(--white) !important;
-    padding: 10px 22px;
-    border-radius: 6px;
-  }
-  .nav-cta:hover { background: var(--orange-light) !important; }
+    .subtitle {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto 30px;
+      color: #4b5563;
+    }
 
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    padding: 120px 60px 80px;
-    position: relative;
-    overflow: hidden;
-  }
+    .cta-button {
+      display: inline-block;
+      background: #111827;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.2s;
+    }
 
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -200px; right: -200px;
-    width: 700px; height: 700px;
-    background: radial-gradient(circle, rgba(232,93,38,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
+    .cta-button:hover {
+      opacity: 0.9;
+    }
 
-  .hero-content {
-    max-width: 650px;
-    animation: fadeUp 0.8s ease forwards;
-  }
+    section {
+      padding: 70px 0;
+    }
 
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(232,93,38,0.1);
-    border: 1px solid rgba(232,93,38,0.3);
-    color: var(--orange-light);
-    padding: 6px 16px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 32px;
-  }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #111827;
+    }
 
-  .hero-badge::before {
-    content: '';
-    width: 6px; height: 6px;
-    background: var(--orange);
-    border-radius: 50%;
-  }
+    p {
+      margin-bottom: 16px;
+      color: #374151;
+    }
 
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(42px, 5vw, 68px);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -2px;
-    margin-bottom: 24px;
-  }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-top: 30px;
+    }
 
-  h1 em { font-style: normal; color: var(--orange); }
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
 
-  .hero-sub {
-    font-size: 18px;
-    color: var(--gray);
-    line-height: 1.7;
-    margin-bottom: 44px;
-    max-width: 520px;
-    font-weight: 300;
-  }
+    .card h3 {
+      margin-bottom: 12px;
+      color: #111827;
+    }
 
-  .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 30px;
+    }
 
-  .btn-primary {
-    background: var(--orange);
-    color: var(--white);
-    padding: 14px 32px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 15px;
-    transition: all 0.2s;
-  }
-  .btn-primary:hover { background: var(--orange-light); transform: translateY(-1px); }
+    .step {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
 
-  .btn-secondary {
-    background: transparent;
-    color: var(--white);
-    padding: 14px 32px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.15);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 15px;
-    transition: all 0.2s;
-  }
-  .btn-secondary:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-1px); }
+    .about {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
 
-  .stats {
-    display: flex;
-    gap: 48px;
-    margin-top: 64px;
-    padding-top: 48px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    flex-wrap: wrap;
-  }
+    .contact {
+      text-align: center;
+    }
 
-  .stat-number {
-    font-family: 'Syne', sans-serif;
-    font-size: 36px;
-    font-weight: 800;
-    line-height: 1;
-  }
+    form {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-  .stat-label { font-size: 13px; color: var(--gray); margin-top: 4px; }
+    input,
+    textarea {
+      padding: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 100%;
+    }
 
-  section { padding: 100px 60px; }
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
 
-  .section-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--orange);
-    margin-bottom: 16px;
-  }
+    button {
+      background: #111827;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(32px, 3.5vw, 48px);
-    font-weight: 800;
-    letter-spacing: -1.5px;
-    line-height: 1.1;
-    margin-bottom: 20px;
-  }
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
 
-  .section-sub {
-    color: var(--gray);
-    font-size: 17px;
-    line-height: 1.7;
-    max-width: 540px;
-    font-weight: 300;
-  }
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.1rem;
+      }
 
-  #servicios { background: var(--navy-mid); }
-
-  .servicios-header { margin-bottom: 60px; }
-
-  .servicios-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
-  }
-
-  .servicio-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 16px;
-    padding: 40px 36px;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .servicio-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--orange);
-    transform: scaleX(0);
-    transition: transform 0.3s;
-  }
-
-  .servicio-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(232,93,38,0.2); transform: translateY(-4px); }
-  .servicio-card:hover::before { transform: scaleX(1); }
-
-  .servicio-icon {
-    width: 48px; height: 48px;
-    background: rgba(232,93,38,0.1);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 24px;
-    font-size: 22px;
-  }
-
-  .servicio-card h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    letter-spacing: -0.5px;
-  }
-
-  .servicio-card p { color: var(--gray); font-size: 15px; line-height: 1.7; font-weight: 300; }
-
-  .servicio-precio {
-    margin-top: 28px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    font-family: 'Syne', sans-serif;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--orange);
-  }
-
-  .servicio-precio span { font-family: 'Lato', sans-serif; font-size: 13px; color: var(--gray); font-weight: 400; }
-
-  .pack-banner {
-    margin-top: 32px;
-    background: rgba(232,93,38,0.06);
-    border: 1px solid rgba(232,93,38,0.15);
-    border-radius: 12px;
-    padding: 28px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .pack-banner-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
-  .pack-banner-sub { color: var(--gray); font-size: 14px; margin-top: 4px; }
-  .pack-precio { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--orange); }
-
-  #sobre-mi { background: var(--navy); }
-
-  .sobre-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-    align-items: center;
-  }
-
-  .sobre-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 36px; }
-
-  .tag {
-    background: rgba(232,93,38,0.08);
-    border: 1px solid rgba(232,93,38,0.2);
-    color: var(--orange-light);
-    padding: 6px 16px;
-    border-radius: 100px;
-    font-size: 13px;
-  }
-
-  .sobre-card {
-    background: var(--navy-mid);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 20px;
-    padding: 48px 40px;
-  }
-
-  .sobre-card-item { display: flex; gap: 20px; margin-bottom: 32px; }
-  .sobre-card-item:last-child { margin-bottom: 0; }
-
-  .sobre-card-icon {
-    width: 44px; height: 44px;
-    background: rgba(232,93,38,0.1);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-
-  .sobre-card-text h4 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-  .sobre-card-text p { color: var(--gray); font-size: 14px; line-height: 1.6; }
-
-  #contacto { background: var(--navy-mid); }
-
-  .contacto-inner { max-width: 600px; margin: 0 auto; text-align: center; }
-  .contacto-inner .section-sub { margin: 0 auto 48px; }
-
-  form { text-align: left; }
-
-  .form-group { margin-bottom: 20px; }
-
-  label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); margin-bottom: 8px; }
-
-  input, textarea, select {
-    width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px;
-    padding: 14px 18px;
-    color: var(--white);
-    font-family: 'Lato', sans-serif;
-    font-size: 15px;
-    transition: border-color 0.2s;
-    outline: none;
-  }
-
-  input:focus, textarea:focus, select:focus { border-color: rgba(232,93,38,0.5); }
-  textarea { resize: vertical; min-height: 120px; }
-  select option { background: var(--navy-mid); }
-
-  .form-submit {
-    width: 100%;
-    background: var(--orange);
-    color: var(--white);
-    border: none;
-    padding: 16px;
-    border-radius: 8px;
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 8px;
-  }
-  .form-submit:hover { background: var(--orange-light); transform: translateY(-1px); }
-
-  footer {
-    padding: 40px 60px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  footer p { color: var(--gray); font-size: 13px; }
-  footer a { color: var(--gray); text-decoration: none; font-size: 13px; transition: color 0.2s; }
-  footer a:hover { color: var(--white); }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @media (max-width: 768px) {
-    nav { padding: 16px 24px; }
-    nav ul { display: none; }
-    .hero { padding: 100px 24px 60px; }
-    section { padding: 70px 24px; }
-    .sobre-grid { grid-template-columns: 1fr; gap: 40px; }
-    footer { padding: 30px 24px; flex-direction: column; text-align: center; }
-  }
-</style>
+      .subtitle {
+        font-size: 1.05rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<nav>
-  <div class="logo">Sky<span>Navair</span></div>
-  <ul>
-    <li><a href="#servicios">Servicios</a></li>
-    <li><a href="#sobre-mi">Sobre mí</a></li>
-    <li><a href="#contacto" class="nav-cta">Contactar</a></li>
-  </ul>
-</nav>
+  <header>
+    <div class="container">
+      <h1>Prepara tus operaciones con drones antes del vuelo</h1>
+      <p class="subtitle">
+        Requisitos, coordinaciones y validación de zona para ayudar a empresas de drones a preparar sus operaciones con previsión.
+      </p>
 
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-badge">Especialista en espacio aéreo · España</div>
-    <h1>Opera con drones<br>sin <em>imprevistos.</em></h1>
-    <p class="hero-sub">Ayudo a empresas de drones a operar sin imprevistos, asegurando que antes de cada vuelo tienen claros los requisitos, documentación y coordinaciones necesarias.</p>
-    <div class="hero-buttons">
-      <a href="#contacto" class="btn-primary">Contacta conmigo →</a>
-      <a href="#servicios" class="btn-secondary">Ver servicios</a>
+      <a href="#contacto" class="cta-button">Hablar conmigo</a>
     </div>
-    <div class="stats">
-      <div class="stat-item">
-        <div class="stat-number">4</div>
-        <div class="stat-label">Años en Enaire</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">3</div>
-        <div class="stat-label">Servicios especializados</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">100%</div>
-        <div class="stat-label">Remoto</div>
-      </div>
-    </div>
-  </div>
-</section>
+  </header>
 
-<section id="servicios">
-  <div class="servicios-header">
-    <div class="section-label">Servicios</div>
-    <h2 class="section-title">Apoyo para preparar<br>operaciones con drones</h2>
-    <p class="section-sub">Tres servicios concretos para que tu empresa opere con seguridad y sin retrasos.</p>
-  </div>
-  <div class="servicios-grid">
-    <div class="servicio-card">
-      <div class="servicio-icon">📋</div>
-      <h3>Requisitos y trámites previos</h3>
-      <p>Qué documentación tienes que presentar, dónde y en qué plazos para operar en zonas controladas en España. Evita retrasos por desconocimiento del proceso.</p>
-      <div class="servicio-precio">250€ <span>/ operación</span></div>
-    </div>
-    <div class="servicio-card">
-      <div class="servicio-icon">✅</div>
-      <h3>Revisión de documentación</h3>
-      <p>Reviso tu documentación antes de enviarla para detectar errores que puedan generar rechazos o retrasos. Entrega con garantías.</p>
-      <div class="servicio-precio">250€ <span>/ operación</span></div>
-    </div>
-    <div class="servicio-card">
-      <div class="servicio-icon">🗺️</div>
-      <h3>Validación operativa de zona</h3>
-      <p>Analizamos si puedes volar en la zona prevista y qué condicionantes o restricciones pueden afectar tu operación antes de comprometerte con el cliente.</p>
-      <div class="servicio-precio">350€ <span>/ operación</span></div>
-    </div>
-  </div>
-  <div class="pack-banner">
-    <div>
-      <div class="pack-banner-title">Pack completo — los 3 servicios</div>
-      <div class="pack-banner-sub">Requisitos + Revisión + Validación de zona</div>
-    </div>
-    <div class="pack-precio">700€</div>
-  </div>
-</section>
+  <section>
+    <div class="container">
+      <h2>¿Por qué es importante?</h2>
 
-<section id="sobre-mi">
-  <div class="sobre-grid">
-    <div class="sobre-content">
-      <div class="section-label">Sobre mí</div>
-      <h2 class="section-title">Conozco el sistema<br>desde dentro.</h2>
-      <p class="section-sub">Soy Raquel Otero, profesional del sector aeronáutico especializada en navegación aérea y gestión del espacio aéreo. He desarrollado SkyNavair para ayudar a empresas de drones a resolver la parte más compleja antes de operar.</p>
-      <div class="sobre-tags">
-        <span class="tag">Gestión de espacio aéreo</span>
-        <span class="tag">Coordinación operacional</span>
-        <span class="tag">Zonas restringidas</span>
-        <span class="tag">NOTAMs</span>
-        <span class="tag">Normativa AESA</span>
-      </div>
+      <p>
+        Cada operación con drones puede requerir requisitos distintos según la ubicación, el entorno y la actividad.
+      </p>
+
+      <p>
+        No tener claras las coordinaciones, condicionantes o documentación necesaria antes de volar puede generar retrasos o limitar la operación.
+      </p>
     </div>
-    <div class="sobre-card">
-      <div class="sobre-card-item">
-        <div class="sobre-card-icon">✈️</div>
-        <div class="sobre-card-text">
-          <h4>Enaire — 4 años</h4>
-          <p>Gestión de espacio aéreo en entornos complejos, coordinación de operaciones y análisis de zonas restringidas.</p>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>Servicios</h2>
+
+      <div class="cards">
+        <div class="card">
+          <h3>Evaluación previa de operación</h3>
+          <p>
+            Identificación de requisitos, coordinaciones y condicionantes antes del vuelo.
+          </p>
         </div>
-      </div>
-      <div class="sobre-card-item">
-        <div class="sobre-card-icon">📡</div>
-        <div class="sobre-card-text">
-          <h4>SkyNavair</h4>
-          <p>Proyecto de divulgación especializada en navegación aérea y espacio aéreo para el sector de los drones en España.</p>
+
+        <div class="card">
+          <h3>Revisión documental</h3>
+          <p>
+            Validación previa de documentación antes de su presentación.
+          </p>
         </div>
-      </div>
-      <div class="sobre-card-item">
-        <div class="sobre-card-icon">🌐</div>
-        <div class="sobre-card-text">
-          <h4>100% Remoto</h4>
-          <p>Todos los servicios se realizan de forma online. Envías la documentación, yo la analizo y te devuelvo el informe.</p>
+
+        <div class="card">
+          <h3>Análisis operativo de zona</h3>
+          <p>
+            Revisión de entorno y viabilidad operativa antes de ejecutar la operación.
+          </p>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="contacto">
-  <div class="contacto-inner">
-    <div class="section-label">Contacto</div>
-    <h2 class="section-title">¿Hablamos?</h2>
-    <p class="section-sub">Cuéntame tu operación y te digo cómo puedo ayudarte.</p>
-    <form action="https://formspree.io/f/xykonvrn" method="POST">
-      <div class="form-group">
-        <label>Nombre y empresa</label>
-        <input type="text" placeholder="Tu nombre y empresa" required>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" placeholder="tu@empresa.com" required>
-      </div>
-      <div class="form-group">
-        <label>Servicio de interés</label>
-        <select>
-          <option value="">Selecciona un servicio</option>
-          <option>Requisitos y trámites previos</option>
-          <option>Revisión de documentación</option>
-          <option>Validación operativa de zona</option>
-          <option>Pack completo</option>
-          <option>No lo tengo claro aún</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Cuéntame tu operación</label>
-        <textarea placeholder="Describe brevemente qué necesitas..."></textarea>
-      </div>
-      <button type="submit" class="form-submit">Enviar mensaje →</button>
-    </form>
-  </div>
-</section>
+  <section>
+    <div class="container">
+      <h2>Cómo funciona</h2>
 
-<footer>
-  <div class="logo">Sky<span>Navair</span></div>
-  <p>© 2025 SkyNavair · <a href="mailto:skynavair@gmail.com">skynavair@gmail.com</a></p>
-  <a href="https://skynavair.substack.com" target="_blank">Newsletter →</a>
-</footer>
+      <div class="steps">
+        <div class="step">
+          <strong>1.</strong> Me envías la ubicación y tipo de operación.
+        </div>
+
+        <div class="step">
+          <strong>2.</strong> Analizo requisitos, entorno y posibles condicionantes.
+        </div>
+
+        <div class="step">
+          <strong>3.</strong> Recibes una guía clara antes de ejecutar el vuelo.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="about">
+        <h2>Sobre mí</h2>
+
+        <p>
+          Soy Raquel Otero. Tras 4 años en Enaire gestionando espacio aéreo y actualmente en Aena, he desarrollado SkyNavair para ayudar a empresas de drones en la preparación previa de sus operaciones.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacto">
+    <div class="container contact">
+      <h2>¿Quieres preparar mejor tu próxima operación?</h2>
+
+      <p>
+        Puedes escribirme y revisamos cómo puede encajar este soporte en vuestra operativa.
+      </p>
+
+      <form action="https://formspree.io/f/xykonvrn" method="POST">
+        <input type="hidden" name="_subject" value="Nuevo contacto SkyNavair" />
+
+        <input type="hidden" name="_next" value="https://skynavair.github.io/SkyNavair/" />
+
+        <input type="text" name="nombre" placeholder="Nombre" required />
+
+        <input type="email" name="email" placeholder="Correo electrónico" required />
+
+        <textarea name="mensaje" placeholder="Cuéntame vuestra operación o necesidad"></textarea>
+
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      SkyNavair · Preparación previa de operaciones con drones
+    </div>
+  </footer>
 
 </body>
 </html>
